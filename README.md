@@ -1,8 +1,7 @@
 
 # AWS Envirnoment
 
-A brief description of what this project does and who it's for
-
+Building quick AWS environment covering all aspects of Devops and DevSecops.
 
 ## Screenshots
 
