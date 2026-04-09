@@ -12,7 +12,6 @@ This guide covers the setup and configuration of filesystem, CPU, and memory mon
 ---
 
 
-
 ### For Python Scripts:
 ```bash
 # Install required dependencies
