@@ -1,0 +1,392 @@
+# Crontab Configuration - Quick Reference
+
+## Quick Start
+
+### 1. Edit your crontab
+```bash
+crontab -e
+```
+
+### 2. Add monitoring jobs
+Copy one of the examples below into your crontab.
+
+### 3. Save and exit
+The cron daemon will automatically load your schedule.
+
+---
+
+## Configuration Examples
+
+### Option 1: Python Scripts (Recommended)
+
+#### Minimal Configuration
+```cron
+# Monitor filesystem every hour
+0 * * * * /usr/local/bin/fs_monitor.py
+
+# Monitor CPU/Memory every 5 minutes
+*/5 * * * * /usr/local/bin/cpu_memory_monitor.py
+```
+
+#### With Logging
+```cron
+# Filesystem monitoring with output logging
+0 * * * * /usr/local/bin/fs_monitor.py >> /var/log/fs_monitor.log 2>&1
+
+# CPU/Memory monitoring with output logging
+*/5 * * * * /usr/local/bin/cpu_memory_monitor.py >> /var/log/cpu_memory_monitor.log 2>&1
+```
+
+#### Business Hours Only
+```cron
+# Monitor filesystem during business hours (8 AM - 6 PM)
+0 8-18 * * 1-5 /usr/local/bin/fs_monitor.py
+
+# Monitor CPU/Memory during business hours
+*/5 8-18 * * 1-5 /usr/local/bin/cpu_memory_monitor.py
+```
+
+---
+
+### Option 2: Bash Scripts
+
+#### Minimal Configuration
+```cron
+# Monitor filesystem every hour
+0 * * * * /usr/local/bin/fs_monitor.sh
+
+# Monitor CPU/Memory every 10 minutes
+*/10 * * * * /usr/local/bin/cpu_memory_monitor.sh
+```
+
+#### With Logging
+```cron
+# Filesystem monitoring with output logging
+0 * * * * /usr/local/bin/fs_monitor.sh >> /var/log/fs_monitor.log 2>&1
+
+# CPU/Memory monitoring with output logging
+*/10 * * * * /usr/local/bin/cpu_memory_monitor.sh >> /var/log/cpu_memory_monitor.log 2>&1
+```
+
+---
+
+### Option 3: Combined Configuration (Both Scripts)
+
+```cron
+# ====== FILESYSTEM MONITORING ======
+# Hourly filesystem check
+0 * * * * /usr/local/bin/fs_monitor.py >> /var/log/fs_monitor.log 2>&1
+
+# ====== CPU/MEMORY MONITORING ======
+# Every 5 minutes CPU/Memory check
+*/5 * * * * /usr/local/bin/cpu_memory_monitor.py >> /var/log/cpu_memory_monitor.log 2>&1
+
+# ====== BACKUP ======
+# Weekly backup of monitoring logs (Sunday at 2 AM)
+0 2 * * 0 tar -czf /backup/monitoring_$(date +\%Y\%m\%d).tar.gz /var/log/*monitor* 2>&1
+```
+
+---
+
+## Frequency Reference
+
+### Common Intervals
+
+| Interval | Cron Expression | Usage |
+|----------|-----------------|-------|
+| Every minute | `* * * * *` | Not recommended (excessive) |
+| Every 5 minutes | `*/5 * * * *` | CPU/Memory monitoring |
+| Every 10 minutes | `*/10 * * * *` | Moderate monitoring |
+| Every 15 minutes | `*/15 * * * *` | Balanced approach |
+| Every 30 minutes | `*/30 * * * *` | Light monitoring |
+| Hourly | `0 * * * *` | Filesystem monitoring |
+| Twice daily | `0 8,20 * * *` | Morning and evening |
+| Daily at 2 AM | `0 2 * * *` | Off-peak times |
+| Weekly (Sunday) | `0 0 * * 0` | Weekly maintenance |
+| Monthly (1st) | `0 0 1 * *` | Monthly reports |
+
+---
+
+## Time Range Reference
+
+### Business Hours Examples
+
+```cron
+# 8 AM - 5 PM, Monday to Friday
+0 8-17 * * 1-5 /path/to/script
+
+# 24/7 monitoring
+0 * * * * /path/to/script
+
+# Office hours (9 AM - 6 PM)
+0 9-18 * * 1-5 /path/to/script
+
+# After hours only (6 PM - 8 AM)
+0 18-23,0-7 * * * /path/to/script
+
+# Weekends only
+0 * * * 0-6 /path/to/script
+
+# Weekdays only
+0 * * * 1-5 /path/to/script
+```
+
+### Hour References
+```
+0  = 12:00 AM (Midnight)
+6  = 6:00 AM
+8  = 8:00 AM
+12 = 12:00 PM (Noon)
+14 = 2:00 PM
+18 = 6:00 PM
+20 = 8:00 PM
+23 = 11:00 PM
+```
+
+---
+
+## Managing Your Crontab
+
+### View Current Crontab
+```bash
+crontab -l
+```
+
+### Edit Crontab
+```bash
+crontab -e
+```
+
+### Remove All Cron Jobs
+```bash
+crontab -r
+```
+
+### Install Crontab from File
+```bash
+crontab /path/to/crontab_file
+```
+
+### Export Crontab to File
+```bash
+crontab -l > my_crontab_backup.txt
+```
+
+---
+
+## Advanced Examples
+
+### Filesystem Monitoring with Conditional Actions
+
+```cron
+# Check filesystem and send alert if needed
+0 * * * * /usr/local/bin/fs_monitor.py && /usr/local/bin/cleanup.sh || echo "Cleanup skipped"
+```
+
+### Multiple Monitoring Scripts
+
+```cron
+# Run multiple checks with different intervals
+# CPU/Memory - Every 5 minutes
+*/5 * * * * /usr/local/bin/cpu_memory_monitor.py
+
+# Filesystem - Every hour
+0 * * * * /usr/local/bin/fs_monitor.py
+
+# Processes - Every 15 minutes
+*/15 * * * * /usr/local/bin/process_monitor.py
+
+# Network - Every 10 minutes (if created)
+*/10 * * * * /usr/local/bin/network_monitor.py
+```
+
+### Staggered Monitoring to Reduce Load
+
+```cron
+# Distribute monitoring across servers
+# Server 1: Check at :00
+0 * * * * server1:/usr/local/bin/cpu_memory_monitor.py
+
+# Server 2: Check at :20
+20 * * * * server2:/usr/local/bin/cpu_memory_monitor.py
+
+# Server 3: Check at :40
+40 * * * * server3:/usr/local/bin/cpu_memory_monitor.py
+```
+
+---
+
+## Troubleshooting Crontab
+
+### Check if cron is running
+```bash
+sudo service cron status
+```
+
+### Restart cron service
+```bash
+sudo service cron restart
+```
+
+### View cron logs
+```bash
+# Ubuntu/Debian
+grep CRON /var/log/syslog
+
+# CentOS/RHEL
+tail -f /var/log/cron
+
+# macOS
+log stream --predicate 'process == "cron"'
+```
+
+### Test cron expression
+```bash
+# Install at (alternative to crontab)
+# Useful for testing one-time executions
+at 14:30 /path/to/script
+```
+
+### Common Issues
+
+**Issue: Script not running**
+- Check full path to script
+- Verify script is executable: `chmod +x script.py`
+- Check cron logs: `grep CRON /var/log/syslog`
+
+**Issue: Email not sending**
+- Verify mail utility installed: `which mail`
+- Test email manually: `echo "test" | mail -s "test" admin@example.com`
+- Check mail logs: `tail -f /var/log/mail.log`
+
+**Issue: Wrong timezone**
+```bash
+# Check system timezone
+date
+timedatectl
+
+# Set timezone
+sudo timedatectl set-timezone America/New_York
+```
+
+---
+
+## Script Paths
+
+When using crontab, always use **absolute paths**:
+
+```cron
+# ✓ CORRECT - Using absolute paths
+0 * * * * /usr/local/bin/fs_monitor.py
+
+# ✗ WRONG - Using relative paths
+0 * * * * fs_monitor.py
+
+# ✗ WRONG - Using ~ (home directory)
+0 * * * * ~/scripts/fs_monitor.py
+```
+
+---
+
+## Environment Variables in Crontab
+
+You can set environment variables at the top of your crontab:
+
+```cron
+# Set environment variables
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/bash
+PYTHON=/usr/bin/python3
+
+# Now use them
+0 * * * * $PYTHON /usr/local/bin/fs_monitor.py
+```
+
+---
+
+## Output Redirection
+
+### Suppress all output
+```cron
+0 * * * * /usr/local/bin/fs_monitor.py > /dev/null 2>&1
+```
+
+### Log stdout only
+```cron
+0 * * * * /usr/local/bin/fs_monitor.py >> /var/log/fs_monitor.log
+```
+
+### Log both stdout and stderr
+```cron
+0 * * * * /usr/local/bin/fs_monitor.py >> /var/log/fs_monitor.log 2>&1
+```
+
+### Log with timestamps
+```cron
+0 * * * * /usr/local/bin/fs_monitor.py >> /var/log/fs_monitor.log 2>&1
+```
+
+### Email output if script fails
+```cron
+0 * * * * /usr/local/bin/fs_monitor.py || echo "Script failed" | mail -s "Alert" admin@example.com
+```
+
+---
+
+## Security Tips
+
+1. **Use absolute paths** - Prevents executing wrong scripts
+2. **Set proper permissions** - `chmod 755 /usr/local/bin/monitor*.py`
+3. **Use dedicated user** - Don't run as root if not needed
+4. **Protect credentials** - Use environment variables or secure vaults
+5. **Monitor the monitors** - Ensure monitoring scripts are running
+6. **Rotate logs** - Implement log rotation to save disk space
+7. **Audit changes** - Keep version control of scripts
+
+---
+
+## Testing Before Adding to Crontab
+
+```bash
+# Test the script manually
+/usr/local/bin/fs_monitor.py
+
+# Test with cron environment
+env -i HOME=$HOME /bin/sh -c 'cd ~ && /usr/local/bin/fs_monitor.py'
+
+# Use at command for one-time test
+at now + 1 minute /usr/local/bin/fs_monitor.py
+atq  # List scheduled jobs
+```
+
+---
+
+## Log Rotation
+
+Create `/etc/logrotate.d/monitoring`:
+
+```
+/var/log/fs_monitor.log
+/var/log/cpu_memory_monitor.log
+{
+    daily
+    rotate 7
+    compress
+    missingok
+    notifempty
+    create 0644 root root
+}
+```
+
+---
+
+**Quick Recommendation:**
+For most systems:
+- **Filesystem**: Check every hour → `0 * * * *`
+- **CPU/Memory**: Check every 5 minutes → `*/5 * * * *`
+- **Thresholds**: Filesystem 80%, CPU/Memory 90%
+
+---
+
+**Last Updated:** 2024
+**Version:** 1.0
