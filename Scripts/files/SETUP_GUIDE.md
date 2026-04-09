@@ -1,6 +1,6 @@
-# System Monitoring Scripts - Setup Guide
+# System Monitoring Scripts
 
-## Overview
+## Over-view
 This guide covers the setup and configuration of filesystem, CPU, and memory monitoring scripts with email alerts.
 
 ### Available Scripts:
@@ -11,7 +11,6 @@ This guide covers the setup and configuration of filesystem, CPU, and memory mon
 
 ---
 
-## Prerequisites
 
 ### For Python Scripts:
 ```bash
