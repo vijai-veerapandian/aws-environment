@@ -1,11 +1,7 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches:
-      - main
-      - feature/*
-
+  workflow_dispatch:
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -24,7 +20,7 @@ jobs:
         run: |
           echo "Building application..."
           mkdir app
-          echo "Hello from DevOps project íº€" > app/index.html
+          echo "Hello from DevOps project ï¿½ï¿½ï¿½" > app/index.html
 
       # Create Dockerfile if not present (temporary)
       - name: Create Dockerfile (dummy)
@@ -43,4 +39,4 @@ jobs:
 
       # Success message
       - name: Done
-        run: echo "CI pipeline completed successfully í¾‰"
+        run: echo "CI pipeline completed successfully ï¿½ï¿½ï¿½"
