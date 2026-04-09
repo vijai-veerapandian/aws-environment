@@ -1,0 +1,46 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Show branch info
+      - name: Print branch name
+        run: echo "Running on branch ${{ github.ref_name }}"
+
+      # Simulate application build
+      - name: Build step (dummy)
+        run: |
+          echo "Building application..."
+          mkdir app
+          echo "Hello from DevOps project íº€" > app/index.html
+
+      # Create Dockerfile if not present (temporary)
+      - name: Create Dockerfile (dummy)
+        run: |
+          echo "FROM nginx:alpine" > Dockerfile
+          echo "COPY app/index.html /usr/share/nginx/html/index.html" >> Dockerfile
+
+      # Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t demo-app:latest .
+
+      # Simulate push (replace later with ECR)
+      - name: Simulate push to registry
+        run: echo "Image would be pushed to ECR here"
+
+      # Success message
+      - name: Done
+        run: echo "CI pipeline completed successfully í¾‰"
