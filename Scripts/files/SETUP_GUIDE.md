@@ -11,7 +11,7 @@ This guide covers the setup and configuration of filesystem, CPU, and memory mon
 
 ---
 
-## Prerequisites
+
 
 ### For Python Scripts:
 ```bash
