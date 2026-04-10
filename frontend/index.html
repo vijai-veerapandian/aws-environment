@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DevOps Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: #e2e8f0;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 12px;
+      width: 400px;
+      margin: auto;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    pre {
+      margin-top: 15px;
+      background: #020617;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🚀 DevOps Dashboard</h1>
+
+  <div class="card">
+    <h3>Backend Check</h3>
+    <button onclick="callAPI()">Call Backend</button>
+
+    <p id="status"></p>
+    <pre id="output">Click button...</pre>
+  </div>
+
+  <script>
+    async function callAPI() {
+      const status = document.getElementById("status");
+      const output = document.getElementById("output");
+
+      status.innerText = "Calling backend...";
+      output.innerText = "";
+
+      try {
+        const res = await fetch("http://localhost:3000/api/db");
+        const data = await res.json();
+
+        status.innerText = "✅ Success";
+        output.innerText = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        status.innerText = "❌ Failed";
+        output.innerText = err.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
