@@ -1,42 +1,43 @@
 name: CI Pipeline
-
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/*
+  pull_request:
+    branches:
+      - main
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repo
-      - name: Checkout code
+      # 🔹 Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Show branch info
-      - name: Print branch name
+      # 🔹 Print branch
+      - name: Show branch
         run: echo "Running on branch ${{ github.ref_name }}"
 
-      # Simulate application build
-      - name: Build step (dummy)
+      # 🔹 Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 🔹 Build Backend Image
+      - name: Build Backend Image
         run: |
-          echo "Building application..."
-          mkdir app
-          echo "Hello from DevOps project ���" > app/index.html
+          docker build -t backend-app ./src/backend-otl/
 
-      # Create Dockerfile if not present (temporary)
-      - name: Create Dockerfile (dummy)
+      # 🔹 Build Frontend Image
+      - name: Build Frontend Image
         run: |
-          echo "FROM nginx:alpine" > Dockerfile
-          echo "COPY app/index.html /usr/share/nginx/html/index.html" >> Dockerfile
+          docker build -t frontend-app ./src/frontend-otl/
 
-      # Build Docker image
-      - name: Build Docker image
+      # 🔹 Build DB Image (optional but included for completeness)
+      - name: Build DB Image
         run: |
-          docker build -t demo-app:latest .
-
-      # Simulate push (replace later with ECR)
-      - name: Simulate push to registry
-        run: echo "Image would be pushed to ECR here"
-
-      # Success message
-      - name: Done
-        run: echo "CI pipeline completed successfully ���"
+          docker build -t postgres-db ./src/db-otl/
+  
+      - name: Basic validation
+        run: echo "All images built successfully ✅"
